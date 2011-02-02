@@ -222,7 +222,7 @@ class Connection(object):  # TODO support auth for pooling
     HOST = "localhost"
     PORT = 27017
 
-    def __init__(self, host=None, port=None, pool_size=None,io_loop=None,
+    def __init__(self, host=None, port=None, io_loop=None, pool_size=None,
                  auto_start_request=None, timeout=None, slave_okay=False,
                  network_timeout=None, document_class=dict, tz_aware=False,
                  _connect=True):
@@ -255,6 +255,7 @@ class Connection(object):  # TODO support auth for pooling
             instance to connect to, or a mongodb URI, or a list of
             hostnames / mongodb URIs
           - `port` (optional): port number on which to connect
+          - `io_loop` (optional): tornado io_loop to attach streams to
           - `pool_size` (optional): DEPRECATED
           - `auto_start_request` (optional): DEPRECATED
           - `slave_okay` (optional): is it okay to connect directly to
@@ -270,20 +271,6 @@ class Connection(object):  # TODO support auth for pooling
             aware (otherwise they will be naive)
 
         .. seealso:: :meth:`end_request`
-        .. versionchanged:: 1.8
-           The `host` parameter can now be a full `mongodb URI
-           <http://dochub.mongodb.org/core/connections>`_, in addition
-           to a simple hostname. It can also be a list of hostnames or
-           URIs.
-        .. versionadded:: 1.8
-           The `tz_aware` parameter.
-        .. versionadded:: 1.7
-           The `document_class` parameter.
-        .. versionchanged:: 1.4
-           DEPRECATED The `pool_size`, `auto_start_request`, and `timeout`
-           parameters.
-        .. versionadded:: 1.1
-           The `network_timeout` parameter.
 
         .. mongodoc:: connections
         """
@@ -581,12 +568,12 @@ class Connection(object):  # TODO support auth for pooling
                          
 
     def __stream(self,callback):
-        """Get a socket from the pool.
+        """Get a stream from the pool.
 
         If it's been > 1 second since the last time we checked out a
         socket, we also check to see if the socket has been closed -
         this let's us avoid seeing *some*
-        :class:`~pymongo.errors.AutoReconnect` exceptions on server
+        :class:`~apymongo.errors.AutoReconnect` exceptions on server
         hiccups, etc. We only do this if it's been > 1 second since
         the last socket checkout, to keep performance reasonable - we
         can't avoid those completely anyway.
@@ -676,11 +663,12 @@ class Connection(object):  # TODO support auth for pooling
     def _send_message(self, message,with_last_error=False,callback=None):
         """Say something to Mongo.
 
-        Raises ConnectionFailure if the message cannot be sent. Raises
+        Passes ConnectionFailure if callback is defined, if the message cannot be sent. Raises
         OperationFailure if `with_last_error` is ``True`` and the
-        response to the getLastError call returns an error. Return the
+        response to the getLastError call returns an error. Otherwise, passes the
         response from lastError, or ``None`` if `with_last_error`
-        is ``False``.
+        is ``False``.  If with_last_error=True, callback cannot be None (that is
+        it MUST be a callable).
 
         :Parameters:
           - `message`: message to send
@@ -714,7 +702,7 @@ class Connection(object):  # TODO support auth for pooling
     def __receive_message_on_stream(self, operation, request_id, strm,callback):
         """Receive a message in response to `request_id` on `sock`.
 
-        Returns the response data with the header removed.
+        Passes the response data with the header removed to the callback
         """
      
         receive_body_curry = functools.partial(receive_body_on_stream,operation,request_id,strm,callback)
@@ -723,7 +711,7 @@ class Connection(object):  # TODO support auth for pooling
         
 
     def __send_and_receive(self, message, callback,strm):
-        """Send a message on the given socket and return the response data.
+        """Send a message on the given socket and pass the response data to the callback.
         """
         (request_id, data) = message        
         
@@ -845,11 +833,13 @@ class Connection(object):  # TODO support auth for pooling
 
     def server_info(self,callback):
         """Get information about the MongoDB server we're connected to.
+           passes results to callback.
         """
         self.admin.command("buildinfo",callback)
 
     def database_names(self,callback):
         """Get a list of the names of all databases on the connected server.
+           Passes results to callback.
         """
         
         def ncallback(resp):

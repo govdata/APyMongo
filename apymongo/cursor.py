@@ -304,9 +304,9 @@ class Cursor(object):
         Takes either a single key and a direction, or a list of (key,
         direction) pairs. The key(s) must be an instance of ``(str,
         unicode)``, and the direction(s) must be one of
-        (:data:`~pymongo.ASCENDING`,
-        :data:`~pymongo.DESCENDING`). Raises
-        :class:`~pymongo.errors.InvalidOperation` if this cursor has
+        (:data:`~apymongo.ASCENDING`,
+        :data:`~apymongo.DESCENDING`). Raises
+        :class:`~apymongo.errors.InvalidOperation` if this cursor has
         already been used. Only the last :meth:`sort` applied to this
         cursor has any effect.
 
@@ -314,7 +314,7 @@ class Cursor(object):
           - `key_or_list`: a single key or a list of (key, direction)
             pairs specifying the keys to sort on
           - `direction` (optional): only used if `key_or_list` is a single
-            key, if not given :data:`~pymongo.ASCENDING` is assumed
+            key, if not given :data:`~apymongo.ASCENDING` is assumed
         """
         self.__check_okay_to_chain()
         keys = helpers._index_list(key_or_list, direction)
@@ -333,7 +333,7 @@ class Cursor(object):
         already been used.
 
         `index` should be an index as passed to
-        :meth:`~pymongo.collection.Collection.create_index`
+        :meth:`~apymongo.collection.Collection.create_index`
         (e.g. ``[('field', ASCENDING)]``). If `index`
         is ``None`` any existing hints for this query are cleared. The
         last hint applied to this cursor takes precedence over all
@@ -394,10 +394,12 @@ class Cursor(object):
     def count(self, callback = None, with_limit_and_skip=False):
         """Get the size of the results set for this query.
 
-        Returns the number of documents in the results set for this query. Does
+        Passes the callback the number of documents in the results set for this query. Does
         not take :meth:`limit` and :meth:`skip` into account by default - set
         `with_limit_and_skip` to ``True`` if that is the desired behavior.
-        Raises :class:`~pymongo.errors.OperationFailure` on a database error.
+        Passes :class:`~apymongo.errors.OperationFailure` on a database error.
+        
+        Raises assert error if callback is not defined.
 
         :Parameters:
           - `with_limit_and_skip` (optional): take any :meth:`limit` or
@@ -407,10 +409,6 @@ class Cursor(object):
         .. note:: The `with_limit_and_skip` parameter requires server
            version **>= 1.1.4-**
 
-        .. versionadded:: 1.1.1
-           The `with_limit_and_skip` parameter.
-           :meth:`~pymongo.cursor.Cursor.__len__` was deprecated in favor of
-           calling :meth:`count` with `with_limit_and_skip` set to ``True``.
         """
         command = {"query": self.__spec, "fields": self.__fields}
         
@@ -440,10 +438,10 @@ class Cursor(object):
 
     def distinct(self, key,callback=None):
         """Get a list of distinct values for `key` among all documents
-        in the result set of this query.
+        in the result set of this query. Passes results to callback
 
         Raises :class:`TypeError` if `key` is not an instance of
-        :class:`basestring`.
+        :class:`basestring`.  Raises assert error if callback is not defined.
 
         :Parameters:
           - `key`: name of key for which we want to get the distinct values
@@ -452,7 +450,6 @@ class Cursor(object):
 
         .. seealso:: :meth:`pymongo.collection.Collection.distinct`
 
-        .. versionadded:: 1.2
         """
         if not isinstance(key, basestring):
             raise TypeError("key must be an instance of basestring")
@@ -475,6 +472,13 @@ class Cursor(object):
 
 
     def loop(self):
+        """
+           Replacement of "next" method in the asynchronous context. 
+           Basically, one you've defined an apymongo cursor, 
+           call the next method to "set it off" and have all the data
+           written to the stream.
+        
+        """
         
         if self.__error:
             self.__callback(self.__error)
@@ -512,9 +516,6 @@ class Cursor(object):
     def _refresh(self):
         """Refreshes the cursor with more data from Mongo.
 
-        Returns the length of self.__data after refresh. Will exit early if
-        self.__data is already non-empty. Raises OperationFailure when the
-        cursor cannot be refreshed due to an error on the query.
         """
 
         callback = self.loop

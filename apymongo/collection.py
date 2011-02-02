@@ -173,12 +173,16 @@ class Collection(object):
         (upsert) operation is performed and any existing document with
         that ``"_id"`` is overwritten.  Otherwise an ``"_id"`` will be
         added to `to_save` and an :meth:`insert` operation is
-        performed. Returns the ``"_id"`` of the saved document.
+        performed.  
+        
+        If the save succeeds, it passes ``"_id"`` of the saved document 
+        to the callback function.  Otherwise, what gets passed is an 
+        Exception object:
 
-        Raises :class:`TypeError` if `to_save` is not an instance of
+        Passes :class:`TypeError` if `to_save` is not an instance of
         :class:`dict`. If `safe` is ``True`` then the save will be
-        checked for errors, raising
-        :class:`~pymongo.errors.OperationFailure` if one
+        checked for errors, passing
+        :class:`~apymongo.errors.OperationFailure` if one
         occurred. Safe inserts wait for a response from the database,
         while normal inserts do not.
 
@@ -195,10 +199,6 @@ class Collection(object):
           - `**kwargs` (optional): any additional arguments imply
             ``safe=True``, and will be used as options for the
             `getLastError` command
-
-        .. versionadded:: 1.8
-           Support for passing `getLastError` options as keyword
-           arguments.
 
         .. mongodoc:: insert
         """
@@ -226,14 +226,14 @@ class Collection(object):
         If `manipulate` is set, the document(s) are manipulated using
         any :class:`~pymongo.son_manipulator.SONManipulator` instances
         that have been added to this
-        :class:`~pymongo.database.Database`. Returns the ``"_id"`` of
+        :class:`~apymongo.database.Database`. Passes the ``"_id"`` of
         the inserted document or a list of ``"_id"`` values of the
-        inserted documents.  If the document(s) does not already
-        contain an ``"_id"`` one will be added.
+        inserted documents to the callback upon success.
+        If the document(s) does not already contain an ``"_id"`` one will be added.
 
         If `safe` is ``True`` then the insert will be checked for
-        errors, raising :class:`~pymongo.errors.OperationFailure` if
-        one occurred. Safe inserts wait for a response from the
+        errors, passing :class:`~apymongo.errors.OperationFailure` instance
+        to the callback if one occurred. Safe inserts wait for a response from the
         database, while normal inserts do not.
 
         Any additional keyword arguments imply ``safe=True``, and
@@ -248,18 +248,12 @@ class Collection(object):
             inserting?
           - `safe` (optional): check that the insert succeeded?
           - `check_keys` (optional): check if keys start with '$' or
-            contain '.', raising :class:`~pymongo.errors.InvalidName`
+            contain '.', passing :class:`~pymongo.errors.InvalidName`
             in either case
           - `**kwargs` (optional): any additional arguments imply
             ``safe=True``, and will be used as options for the
             `getLastError` command
-
-        .. versionadded:: 1.8
-           Support for passing `getLastError` options as keyword
-           arguments.
-        .. versionchanged:: 1.1
-           Bulk insert works with any iterable
-
+            
         .. mongodoc:: insert
         """
         docs = doc_or_docs
@@ -290,29 +284,14 @@ class Collection(object):
                safe=False, multi=False,callback=None, **kwargs):
         """Update a document(s) in this collection.
 
-        Raises :class:`TypeError` if either `spec` or `document` is
+        Passes :class:`TypeError` if either `spec` or `document` is
         not an instance of ``dict`` or `upsert` is not an instance of
         ``bool``. If `safe` is ``True`` then the update will be
-        checked for errors, raising
+        checked for errors, passing
         :class:`~pymongo.errors.OperationFailure` if one
         occurred. Safe updates require a response from the database,
         while normal updates do not - thus, setting `safe` to ``True``
         will negatively impact performance.
-
-        There are many useful `update modifiers`_ which can be used
-        when performing updates. For example, here we use the
-        ``"$set"`` modifier to modify some fields in a matching
-        document:
-
-        .. doctest::
-
-          >>> db.test.insert({"x": "y", "a": "b"})
-          ObjectId('...')
-          >>> list(db.test.find())
-          [{u'a': u'b', u'x': u'y', u'_id': ObjectId('...')}]
-          >>> db.test.update({"x": "y"}, {"$set": {"a": "c"}})
-          >>> list(db.test.find())
-          [{u'a': u'c', u'x': u'y', u'_id': ObjectId('...')}]
 
         If `safe` is ``True`` returns the response to the *lastError*
         command. Otherwise, returns ``None``.
@@ -347,14 +326,6 @@ class Collection(object):
             ``safe=True``, and will be used as options for the
             `getLastError` command
 
-        .. versionadded:: 1.8
-           Support for passing `getLastError` options as keyword
-           arguments.
-        .. versionchanged:: 1.4
-           Return the response to *lastError* if `safe` is ``True``.
-        .. versionadded:: 1.1.1
-           The `multi` parameter.
-
         .. _update modifiers: http://www.mongodb.org/display/DOCS/Updating
 
         .. mongodoc:: update
@@ -384,7 +355,6 @@ class Collection(object):
           >>> db.foo.drop()
           >>> db.drop_collection("foo")
 
-        .. versionadded:: 1.8
         """
         self.__database.drop_collection(self.__name)
 
@@ -395,18 +365,18 @@ class Collection(object):
            care, as removed data cannot be restored.
 
         If `safe` is ``True`` then the remove operation will be
-        checked for errors, raising
+        checked for errors, passing
         :class:`~pymongo.errors.OperationFailure` if one
         occurred. Safe removes wait for a response from the database,
         while normal removes do not.
 
         If `spec_or_id` is ``None``, all documents in this collection
         will be removed. This is not equivalent to calling
-        :meth:`~pymongo.database.Database.drop_collection`, however,
+        :meth:`~apymongo.database.Database.drop_collection`, however,
         as indexes will not be removed.
 
-        If `safe` is ``True`` returns the response to the *lastError*
-        command. Otherwise, returns ``None``.
+        If `safe` is ``True`` passes the response to the *lastError*
+        command. Otherwise, passes ``None`` to the callback.
 
         Any additional keyword arguments imply ``safe=True``, and will
         be used as options for the resultant `getLastError`
@@ -421,20 +391,6 @@ class Collection(object):
           - `**kwargs` (optional): any additional arguments imply
             ``safe=True``, and will be used as options for the
             `getLastError` command
-
-        .. versionadded:: 1.8
-           Support for passing `getLastError` options as keyword arguments.
-        .. versionchanged:: 1.7 Accept any type other than a ``dict``
-           instance for removal by ``"_id"``, not just
-           :class:`~bson.objectid.ObjectId` instances.
-        .. versionchanged:: 1.4
-           Return the response to *lastError* if `safe` is ``True``.
-        .. versionchanged:: 1.2
-           The `spec_or_id` parameter is now optional. If it is
-           not specified *all* documents in the collection will be
-           removed.
-        .. versionadded:: 1.1
-           The `safe` parameter.
 
         .. mongodoc:: remove
         """
@@ -454,8 +410,8 @@ class Collection(object):
 
         All arguments to :meth:`find` are also valid arguments for
         :meth:`find_one`, although any `limit` argument will be
-        ignored. Returns a single document, or ``None`` if no matching
-        document is found.
+        ignored. Passes  a single document, or ``None`` if no matching
+        document is found, to the callback.
 
         :Parameters:
 
@@ -469,13 +425,6 @@ class Collection(object):
           - `**kwargs` (optional): any additional keyword arguments
             are the same as the arguments to :meth:`find`.
 
-        .. versionchanged:: 1.7
-           Allow passing any of the arguments that are valid for
-           :meth:`find`.
-
-        .. versionchanged:: 1.7 Accept any type other than a ``dict``
-           instance as an ``"_id"`` query, not just
-           :class:`~bson.objectid.ObjectId` instances.
         """
         if spec_or_id is not None and not isinstance(spec_or_id, dict):
             spec_or_id = {"_id": spec_or_id}
@@ -556,19 +505,6 @@ class Collection(object):
         .. note:: The `max_scan` parameter requires server
            version **>= 1.5.1**
 
-        .. versionadded:: 1.8
-           The `network_timeout` parameter.
-
-        .. versionadded:: 1.7
-           The `sort`, `max_scan` and `as_class` parameters.
-
-        .. versionchanged:: 1.7
-           The `fields` parameter can now be a dict or any iterable in
-           addition to a list.
-
-        .. versionadded:: 1.1
-           The `tailable` parameter.
-
         .. mongodoc:: find
         """
         return Cursor(self, *args, **kwargs)
@@ -578,7 +514,8 @@ class Collection(object):
         """Get the number of documents in this collection.
 
         To get the number of documents matching a specific query use
-        :meth:`pymongo.cursor.Cursor.count`.
+        :meth:`apymongo.cursor.Cursor.count`.
+        
         """
         return self.find(callback=callback).count()
         
@@ -591,14 +528,13 @@ class Collection(object):
         :class:`basestring`.
 
         To get the distinct values for a key in the result set of a
-        query use :meth:`~pymongo.cursor.Cursor.distinct`.
+        query use :meth:`~apymongo.cursor.Cursor.distinct`.
 
         :Parameters:
           - `key`: name of key for which we want to get the distinct values
 
         .. note:: Requires server version **>= 1.1.0**
 
-        .. versionadded:: 1.1.1
         """
         return self.find(callback=callback).distinct(key)
         
@@ -610,8 +546,8 @@ class Collection(object):
 
         Takes either a single key or a list of (key, direction) pairs.
         The key(s) must be an instance of :class:`basestring`, and the
-        directions must be one of (:data:`~pymongo.ASCENDING`,
-        :data:`~pymongo.DESCENDING`, :data:`~pymongo.GEO2D`). Returns
+        directions must be one of (:data:`~apymongo.ASCENDING`,
+        :data:`~apymongo.DESCENDING`, :data:`~apymongo.GEO2D`). Returns
         the name of the created index.
 
         To create a single key index on the key ``'mike'`` we just use
@@ -649,12 +585,6 @@ class Collection(object):
           - `**kwargs` (optional): any additional index creation
             options (see the above list) should be passed as keyword
             arguments
-
-        .. versionchanged:: 1.5.1
-           Accept kwargs to support all index creation options.
-
-        .. versionadded:: 1.5
-           The `name` parameter.
 
         .. seealso:: :meth:`ensure_index`
 
@@ -720,12 +650,13 @@ class Collection(object):
 
         Care must be taken when the database is being accessed through
         multiple connections at once. If an index is created using
-        PyMongo and then deleted using another connection any call to
+        APyMongo and then deleted using another connection any call to
         :meth:`ensure_index` within the cache window will fail to
         re-create the missing index.
 
-        Returns the name of the created index if an index is actually
-        created. Returns ``None`` if the index already exists.
+        Passes the name of the created index to the callback if an index is actually
+        created. Passes ``None`` if the index already exists.  Otherwise, passes
+        whatever errors are encountered.
 
         All optional index creation paramaters should be passed as
         keyword arguments to this method. Valid options include:
@@ -752,12 +683,6 @@ class Collection(object):
           - `**kwargs` (optional): any additional index creation
             options (see the above list) should be passed as keyword
             arguments
-
-        .. versionchanged:: 1.5.1
-           Accept kwargs to support all index creation options.
-
-        .. versionadded:: 1.5
-           The `name` parameter.
 
         .. seealso:: :meth:`create_index`
         """
@@ -819,7 +744,7 @@ class Collection(object):
     def index_information(self,callback):
         """Get information on this collection's indexes.
 
-        Returns a dictionary where the keys are index names (as
+        Passes to the callback a dictionary where the keys are index names (as
         returned by create_index()) and the values are dictionaries
         containing information about each index. The dictionary is
         guaranteed to contain at least a single key, ``"key"`` which
@@ -831,15 +756,13 @@ class Collection(object):
 
         >>> db.test.ensure_index("x", unique=True)
         u'x_1'
-        >>> db.test.index_information()
+        >>> db.test.index_information(callback)
+        
+        The result passed to the callback would be:
         {u'_id_': {u'key': [(u'_id', 1)]},
          u'x_1': {u'unique': True, u'key': [(u'x', 1)]}}
 
 
-        .. versionchanged:: 1.7
-           The values in the resultant dictionary are now dictionaries
-           themselves, whose ``"key"`` item contains the list that was
-           the value in previous versions of PyMongo.
         """
         
         def mod_callback(raw):
@@ -859,9 +782,9 @@ class Collection(object):
     def options(self,callback):
         """Get the options set on this collection.
 
-        Returns a dictionary of options and their values - see
-        :meth:`~pymongo.database.Database.create_collection` for more
-        information on the possible options. Returns an empty
+        Passes to the callback a dictionary of options and their values - see
+        :meth:`~apymongo.database.Database.create_collection` for more
+        information on the possible options. Passes an empty
         dictionary if the collection has not been created yet.
         """
         
@@ -882,11 +805,11 @@ class Collection(object):
 
     # TODO key and condition ought to be optional, but deprecation
     # could be painful as argument order would have to change.
-    def group(self, key, condition, initial, reduce, callback, finalize=None,
+    def group(self, callback, key, condition, initial, reduce, finalize=None,
               command=True):
         """Perform a query similar to an SQL *group by* operation.
 
-        Returns an array of grouped items.
+        Passes to the callback an array of grouped items.
 
         The `key` parameter can be:
 
@@ -907,12 +830,7 @@ class Collection(object):
             command instead of in an eval - this option is deprecated and
             will be removed in favor of running all groups as commands
 
-        .. versionchanged:: 1.4
-           The `key` argument can now be ``None`` or a JavaScript function,
-           in addition to a :class:`list` of keys.
-        .. versionchanged:: 1.3
-           The `command` argument now defaults to ``True`` and is deprecated.
-        """
+       """
         if not command:
             warnings.warn("eval-based groups are deprecated, and the "
                           "command option will be removed.",
@@ -950,10 +868,7 @@ class Collection(object):
           - `**kwargs` (optional): any additional rename options
             should be passed as keyword arguments
             (i.e. ``dropTarget=True``)
-
-        .. versionadded:: 1.7
-           support for accepting keyword arguments for rename options
-        """
+       """
         if not isinstance(new_name, basestring):
             raise TypeError("new_name must be an instance of basestring")
 
@@ -974,9 +889,9 @@ class Collection(object):
     def map_reduce(self, callback, map, reduce, full_response=False, **kwargs):
         """Perform a map/reduce operation on this collection.
 
-        If `full_response` is ``False`` (default) returns a
-        :class:`~pymongo.collection.Collection` instance containing
-        the results of the operation. Otherwise, returns the full
+        If `full_response` is ``False`` (default), it passes to the callback a
+        :class:`~apymongo.collection.Collection` instance containing
+        the results of the operation. Otherwise, passes the full
         response from the server to the `map reduce command`_.
 
         :Parameters:
@@ -988,13 +903,11 @@ class Collection(object):
             `map reduce command`_ may be passed as keyword arguments to this
             helper method, e.g.::
 
-            >>> db.test.map_reduce(map, reduce, limit=2)
+            >>> db.test.map_reduce(callback, map, reduce, limit=2)
 
         .. note:: Requires server version **>= 1.1.1**
 
         .. seealso:: :doc:`/examples/map_reduce`
-
-        .. versionadded:: 1.2
 
         .. _map reduce command: http://www.mongodb.org/display/DOCS/MapReduce
 
@@ -1021,7 +934,7 @@ class Collection(object):
         parameters. Either `update` or `remove` arguments are required, all
         others are optional.
 
-        Returns either the object before or after modification based on `new`
+        Passes to the callback either the object before or after modification based on `new`
         parameter. If no objects match the `query` and `upsert` is false,
         returns ``None``. If upserting and `new` is false, returns ``{}``.
 
@@ -1044,7 +957,6 @@ class Collection(object):
 
         .. note:: Requires server version **>= 1.3.0**
 
-        .. versionadded:: 1.10
         """
         if (not update and not kwargs.get('remove', None)):
             raise ValueError("Must either update or remove")

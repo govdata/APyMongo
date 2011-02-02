@@ -232,6 +232,8 @@ class Database(object):
         `command` must be an instance of :class:`dict` and will be
         sent as is.
 
+        Command responses will be passed to callback.
+
         Any additional keyword arguments will be added to the final
         command document before it is sent.
 
@@ -269,12 +271,6 @@ class Database(object):
           - `**kwargs` (optional): additional keyword arguments will
             be added to the command document before it is sent
 
-        .. versionchanged:: 1.6
-           Added the `value` argument for string commands, and keyword
-           arguments for additional command options.
-        .. versionchanged:: 1.5
-           `command` can be a string in addition to a full document.
-        .. versionadded:: 1.4
 
         .. mongodoc:: commands
         """
@@ -344,7 +340,7 @@ class Database(object):
     def validate_collection(self, name_or_collection,callback):
         """Validate a collection.
 
-        Returns a string of validation info. Raises CollectionInvalid if
+        Passes a string of validation info to callback, or  CollectionInvalid if
         validation fails.
         """
         name = name_or_collection
@@ -368,8 +364,8 @@ class Database(object):
     def profiling_level(self,callback):
         """Get the database's current profiling level.
 
-        Returns one of (:data:`~pymongo.OFF`,
-        :data:`~pymongo.SLOW_ONLY`, :data:`~pymongo.ALL`).
+        Passes one of (:data:`~paymongo.OFF`,
+        :data:`~apymongo.SLOW_ONLY`, :data:`~apymongo.ALL`) to the callback.
 
         .. mongodoc:: profiling
         """
@@ -399,7 +395,7 @@ class Database(object):
         self.command("profile", level)
 
     def profiling_info(self,callback):
-        """Returns a list containing current profiling information.
+        """Passes to callback a list containing current profiling information.
 
         .. mongodoc:: profiling
         """
@@ -409,9 +405,9 @@ class Database(object):
         
 
     def error(self,callback):
-        """Get a database error if one occured on the last operation.
+        """Passes a database error if one occured on the last operation to the callback.
 
-        Return None if the last operation was error-free. Otherwise return the
+        Passes None if the last operation was error-free. Otherwise  passes the
         error that occurred.
         """
         
@@ -431,7 +427,7 @@ class Database(object):
     def last_status(self,callback):
         """Get status information from the last operation.
 
-        Returns a SON object with status information.
+        Passes a SON object with status information to the callback.
         """
         self.command("getlasterror",callback=callback)
         
@@ -439,8 +435,8 @@ class Database(object):
     def previous_error(self,callback):
         """Get the most recent error to have occurred on this database.
 
-        Only returns errors that have occurred since the last call to
-        `Database.reset_error_history`. Returns None if no such errors have
+        Only passes errors that have occurred since the last call to
+        `Database.reset_error_history`. Passes None if no such errors have
         occurred.
         """
         
@@ -477,7 +473,6 @@ class Database(object):
           - `name`: the name of the user to create
           - `password`: the password of the user to create
 
-        .. versionadded:: 1.4
         """
         pwd = helpers._password_digest(name, password)
         self.system.users.update({"user": name},
@@ -494,13 +489,15 @@ class Database(object):
         :Paramaters:
           - `name`: the name of the user to remove
 
-        .. versionadded:: 1.4
         """
         self.system.users.remove({"user": name}, safe=True)
 
     def authenticate(self, name, password,callback=None):
         """Authenticate to use this database.
 
+        Passes authentication nonce to the callback (or errors in authentication
+        process). 
+        
         Once authenticated, the user has full read and write access to
         this database. Raises :class:`TypeError` if either `name` or
         `password` is not an instance of ``(str,
@@ -577,8 +574,8 @@ class Database(object):
         document it points to.
 
         Raises :class:`TypeError` if `dbref` is not an instance of
-        :class:`~bson.dbref.DBRef`. Returns a document, or ``None`` if
-        the reference does not point to a valid document.  Raises
+        :class:`~bson.dbref.DBRef`. Passes to the callback a document, or ``None`` if
+        the reference does not point to a valid document.  Passes
         :class:`ValueError` if `dbref` has a database specified that
         is different from the current database.
 
@@ -635,7 +632,9 @@ class Database(object):
 
 
 class SystemJS(object):
-    """Helper class for dealing with stored JavaScript.
+    """Helper class for dealing with stored JavaScript.   
+    
+       This has NOT been properly tested. 
     """
 
     def __init__(self, database):
