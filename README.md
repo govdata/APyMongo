@@ -70,7 +70,10 @@ Here's a basic example that can be used in a Tornado web server:
 
 For more information, see the [**examples**](APyMongo/tree/master/doc/examples) section 
 of the docs.  There, you can find code that will show you how to 
-[insert](APyMongo/blob/master/doc/examples/insert.py).
+[insert](APyMongo/blob/master/doc/examples/insert.py) records,
+[query to find](APyMongo/blob/master/doc/examples/find.py) records, and
+[count](APyMongo/blob/master/doc/examples/count.py) records.   You can also see
+how to use APyMongo to build a [streaming data handler](APyMongo/blob/master/doc/examples/streaming.py).
 
 To use a given example:
 
