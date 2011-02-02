@@ -31,7 +31,7 @@ class InsertHandler(tornado.web.RequestHandler):
         def callback(r):
             self.final_handler(response,r)
         
-        coll = self.connection['testdb']['__ASYNCTEST3__']
+        coll = self.connection['testdb']['testcollection']
         
         coll.count(callback = callback)
 
