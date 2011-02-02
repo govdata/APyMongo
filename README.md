@@ -20,13 +20,14 @@ which is sponsored by the [Institute for Quantitative Social Science at Harvard]
 Installation
 ============
 
-For now, the project is just a github repo (https://github.com/yamins81/apymongo].
+For now, the project can only be obtained from the github repo 
+(https://github.com/govdata/APyMongo).
 
-The install process is: 
+The installation process is: 
 
-1. install mongodb if you havent already
-2. pull the apymongo repo
-3. run "python setup.py install" in the apymongo directory.
+1. Install mongodb (http://www.mongodb.org/) if you havent already.
+2. Pull the APyMongo repo
+3. Run "python setup.py install" in the APyMongo directory.
 
 
 Examples
@@ -53,14 +54,14 @@ Here's a basic example that can be used in a Tornado web server:
 
 For more information, see the [**examples**](APyMongo/tree/master/doc/examples) section 
 of the docs.  There, you can find code that will show you how to 
-[insert](APyMongo/blob/master/doc/examples/insert.py) records,
-[query to find](APyMongo/blob/master/doc/examples/find.py) records, and
+[insert](APyMongo/blob/master/doc/examples/insert.py) records, query to 
+[find](APyMongo/blob/master/doc/examples/find.py) records, and
 [count](APyMongo/blob/master/doc/examples/count.py) records.   You can also see
 how to use APyMongo to build a [streaming data handler](APyMongo/blob/master/doc/examples/streaming.py).
 
 To use a given example:
 
-1. Make sure you have installed mongo and apymongo (and tornado), and that 
+1. Make sure you have installed MongoDB, Tornado (and of course APyMongo itself), and that 
 a MongoDB instance is running on localhost:27017 (the default).
 
 2. cd /path/to/apymongo/doc/examples
@@ -101,15 +102,18 @@ use the *apymongo.cursor.loop* method.
 tornado.io_loop object for the streams to attach to.
 
 
-Testing
-=======
+Mailing List
+============
 
-The easiest way to run the tests is to install [nose](http://somethingaboutorange.com/mrl/projects/nose/>) via **easy_install
-nose**) and run **nosetests** or **python setup.py test** in the root
-of the distribution. Tests are located in the *test/* directory.
+Questions should be posted here:
 
-Currently, the tests are very scant (and -- something using the AsyncTestCase in the tornado.testing framework
-is not working quite right ...)
+**apymongo@googlegroups.com**
+
+You'll have to join the group to post a question.  I'll try to respond to questions
+quickly. 
+
+You can also post a bug report via the github issue tracker.  (Probably you should email
+the list first, and then once I confirm it's a bug, start an issue on the tracker.)
 
 
 Dependencies
@@ -129,6 +133,19 @@ Additional dependencies are:
 - (to auto-discover tests) [nose](http://somethingaboutorange.com/mrl/projects/nose/).
 
 
+Testing
+=======
+
+To run the tests, install [nose](http://somethingaboutorange.com/mrl/projects/nose/>) 
+via **easy_install nose**) and run **nosetests** or **python setup.py test** in 
+the root of the distribution. Tests are located in the *test/* directory.
+
+Currently, the tests are very scant (and -- something using the AsyncTestCase in 
+the tornado.testing framework is not working quite right.)   I wouldn't be surprised
+if some things are broken in stupid ways, but if you let me know about a problem 
+on the mailing list (apymongo@googlegroups.com), I'll try to handle it right away.
+
+
 Limitations
 ===========
 
@@ -137,6 +154,9 @@ APymongo currently does not handle:
 - master-slave connections.  
 - DBRef derefercing in son manipulators. 
 - the *explain* method
+
+All of these should be no problem to support in principle -- hopefully I (or some 
+needy user) will get to these soon.
 
 
 Relationship to **asyncmongo**
