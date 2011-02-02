@@ -109,11 +109,11 @@ Questions should be posted here:
 
 **apymongo@googlegroups.com**
 
-You'll have to join the group to post a question.  I'll try to respond to questions
-quickly. 
+You'll have to [join the mailing list group](http://groups.google.com/group/apymongo)
+to post a question.  I'll try to respond to questions as quickly as I can.
 
 You can also post a bug report via the github issue tracker.  (Probably you should email
-the list first, and then once I confirm it's a bug, start an issue on the tracker.)
+the list first, and then once I confirm something is a bug, start an issue on the tracker.)
 
 
 Dependencies
@@ -157,6 +157,13 @@ APymongo currently does not handle:
 
 All of these should be no problem to support in principle -- hopefully I (or some 
 needy user) will get to these soon.
+
+
+Developers
+============
+
+Contributions are welcome!  Simply fork the project using Github, do you business, 
+and issue a pull request when ready. 
 
 
 Relationship to **asyncmongo**
