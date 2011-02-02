@@ -16,6 +16,9 @@ highthrouput read-write connections to a MongoDB instance.
 APyMongo was developed by the [GovData Project](http://web.mit.edu/govdata), 
 which is sponsored by the [Institute for Quantitative Social Science at Harvard](http://iq.harvard.edu).
 
+APyMongo is still the process of "beta testing" -- obviously this is an open beta test -- 
+and has yet to have a formal release.   Don't expect everything to work!  (But please
+let us know via the mailing list if things break.)
 
 Installation
 ============
