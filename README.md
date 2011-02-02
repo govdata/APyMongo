@@ -68,7 +68,11 @@ Here's a basic example that can be used in a Tornado web server:
 			self.write(json.dumps(response,default=json_util.default))
 			self.finish()
 
-For more information, see the **examples** section of the docs.  To use a given example:
+For more information, see the [**examples**]((/tree/master/doc/examples) section 
+of the docs.  There, you can find code that will show you how to 
+[insert](/blob/master/doc/examples/insert.py).
+
+To use a given example:
 
 1. Make sure you have installed mongo and apymongo (and tornado), and that 
 a MongoDB instance is running on localhost:27017 (the default).
