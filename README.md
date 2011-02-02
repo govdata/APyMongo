@@ -11,7 +11,10 @@ APyMongo is an asynchronous version of [the PyMongo driver for MongoDB](http://a
 APyMongo uses the [tornado iostream eventloop](github.com/facebook/tornado/blob/master/tornado/iostream.py) 
 to drive asychronous requests.  A primary use of APyMongo is to serve MongoDB-backed websites in an efficient asynchronous manner
 via the [tornado web server](www.tornadoweb.org), but it can be used wherever one wants to drive multiple efficient 
-highthrouput read-write connections to a MongoDB instance.   
+highthrouput read-write connections to a MongoDB instance. 
+
+APyMongo tries to stick as closely as possible to PyMongo, both in terms of codbase
+and API.
 
 APyMongo was developed by the [GovData Project](http://web.mit.edu/govdata), 
 which is sponsored by the [Institute for Quantitative Social Science at Harvard](http://iq.harvard.edu).
@@ -80,9 +83,8 @@ a MongoDB instance is running on localhost:27017 (the default).
 Documentation
 =============
 
-Currently, there is no separate documentation for this project. 
-
-However,  APyMongo's API is essentially identical to pymongo's except for the following:
+Currently, there is no separate documentation for this project. However,  
+APyMongo's API is essentially identical to pymongo's except for the following:
 
 - Every pymongo method that actually hits the database for a response
 now has a *callback* argument, a single-argument executable to which tornado will
@@ -167,7 +169,7 @@ needy user) will get to these soon.
 Developers
 ============
 
-Contributions are welcome!  Simply fork the project using Github, do you business, 
+Contributions are welcome!  Simply fork the project using Github, do your business, 
 and issue a pull request when ready. 
 
 
