@@ -68,9 +68,9 @@ Here's a basic example that can be used in a Tornado web server:
 			self.write(json.dumps(response,default=json_util.default))
 			self.finish()
 
-For more information, see the [**examples**](tree/master/doc/examples) section 
+For more information, see the [**examples**](APyMongo/tree/master/doc/examples) section 
 of the docs.  There, you can find code that will show you how to 
-[insert](blob/master/doc/examples/insert.py).
+[insert](APyMongo/blob/master/doc/examples/insert.py).
 
 To use a given example:
 
