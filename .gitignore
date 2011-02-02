@@ -1,0 +1,13 @@
+*~
+*#*
+.DS*
+*.cm
+*.class
+*.pyc
+*.pyd
+build/
+doc/_build/
+dist/
+tools/settings.py
+pymongo.egg-info/
+*.so
