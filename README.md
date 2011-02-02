@@ -13,8 +13,8 @@ to drive asychronous requests.  A primary use of APyMongo is to serve MongoDB-ba
 via the [tornado web server](www.tornadoweb.org), but it can be used wherever one wants to drive multiple efficient 
 highthrouput read-write connections to a MongoDB instance. 
 
-APyMongo tries to stick as closely as possible to PyMongo, both in terms of codbase
-and API.
+APyMongo tries to stick as closely as possible to PyMongo, both in terms of 
+codebase and API.
 
 APyMongo was developed by the [GovData Project](http://web.mit.edu/govdata), 
 which is sponsored by the [Institute for Quantitative Social Science at Harvard](http://iq.harvard.edu).
@@ -176,7 +176,7 @@ and issue a pull request when ready.
 Relationship to **asyncmongo**
 =============================
 
-APyMongo was developed for the GovData project (https://github.com/yamins81/govdata-core), where a 
+APyMongo was developed for the GovData project (https://github.com/govdata/govdata-core), where a 
 version of it is buried deep in the govdata core code.   While APyMongo was being modularized 
 for separate relase, we learned of [asyncmongo](https://github.com/bitly/asyncmongo), 
 an existing asynchronous python-language MongoDB driver that also uses the tornado iostream. 

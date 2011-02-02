@@ -35,6 +35,17 @@ _QUERY_OPTIONS = {
 # alternative to the fields specifier.
 class Cursor(object):
     """A cursor / iterator over Mongo query results.
+    
+        :Parameters:
+          - `collection`: the collection which the cursor is reading.
+          - `spec` (optional): the query to read through (unspecified means the whole
+          database)
+          - `callback`: the callback to call when any reading 
+          (kicked off via, e.g. the loop method) is done.
+          - `processor`:  online processor callable to be called on each record
+          during the process of reading. 
+          
+          All other parameters are as in PyMongo.
     """
 
     def __init__(self, collection, 
