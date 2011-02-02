@@ -26,8 +26,11 @@ For now, the project can only be obtained from the github repo
 The installation process is: 
 
 1. Install mongodb (http://www.mongodb.org/) if you havent already.
-2. Pull the APyMongo repo
-3. Run "python setup.py install" in the APyMongo directory.
+2. Install Tornado (www.tornadoweb.org) if you havent already.  (NB:  You MUST be using 
+a recent pull from the tornado github repo. APyMongo depends on a recent bugfix
+in the tornado.iostream module.)
+3. Pull the APyMongo repo
+4. Run "python setup.py install" in the APyMongo directory.
 
 
 Examples
@@ -137,8 +140,7 @@ Testing
 =======
 
 To run the tests, install [nose](http://somethingaboutorange.com/mrl/projects/nose/>) 
-via **easy_install nose**) and run **nosetests** or **python setup.py test** in 
-the root of the distribution. Tests are located in the *test/* directory.
+and run **nosetests** or **python setup.py test** in the root of the distribution. Tests are located in the *test/* directory.
 
 Currently, the tests are very scant (and -- something using the AsyncTestCase in 
 the tornado.testing framework is not working quite right.)   I wouldn't be surprised
