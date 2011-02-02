@@ -29,23 +29,6 @@ The install process is:
 3. run "python setup.py install" in the apymongo directory.
 
 
-Dependencies
-============
-
-Mongo:  APyMongo works for the same MongoDB distributions that PyMongo works on. 
-
-Python:  APyMongo requires Python >=2.4.    
-
-Tornado:  IMPORTANT!!! You MUST must be using the a recent pull from the Tornado repository to  
-run APyMongo.   APyMongo depends on a recent addition to the tornado.iostream module that is NOT
-present in the current release. 
-
-Additional dependencies are:
-
-- (to generate documentation) [sphinx](http://sphinx.pocoo.org/)  
-- (to auto-discover tests) [nose](http://somethingaboutorange.com/mrl/projects/nose/).
-
-
 Examples
 ========
 Here's a basic example that can be used in a Tornado web server:
@@ -85,7 +68,6 @@ a MongoDB instance is running on localhost:27017 (the default).
 3. python [desired_example_file.py]
 
 4. Open a web broweser and point it to localhost:8000
-
 
 
 Documentation
@@ -128,6 +110,23 @@ of the distribution. Tests are located in the *test/* directory.
 
 Currently, the tests are very scant (and -- something using the AsyncTestCase in the tornado.testing framework
 is not working quite right ...)
+
+
+Dependencies
+============
+
+Mongo:  APyMongo works for the same MongoDB distributions that PyMongo works on. 
+
+Python:  APyMongo requires Python >=2.4.    
+
+Tornado:  IMPORTANT!!! You MUST must be using the a recent pull from the Tornado repository to  
+run APyMongo.   APyMongo depends on a recent addition to the tornado.iostream module that is NOT
+present in the current release. 
+
+Additional dependencies are:
+
+- (to generate documentation) [sphinx](http://sphinx.pocoo.org/)  
+- (to auto-discover tests) [nose](http://somethingaboutorange.com/mrl/projects/nose/).
 
 
 Limitations
