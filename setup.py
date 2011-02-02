@@ -22,7 +22,7 @@ from distutils.core import Extension
 # Remember to change in pymongo/__init__.py as well!
 version = "0.0.1"
 
-f = open("README.rst")
+f = open("README.md")
 try:
     try:
         readme_content = f.read()
