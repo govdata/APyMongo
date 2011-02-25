@@ -332,6 +332,26 @@ class Cursor(object):
         self.__ordering = helpers._index_document(keys)
         return self
 
+    def explain(self):
+        """Sends explain plan records for this cursor to the callback.
+           NB:  Since this is a method that in PyMongo used a "next" call, 
+           and since all "next" calls are replaced with "loop" in APyMongo,
+           the API for this method diffes between PyMongo and APyMongo. 
+           In particular, instead of returning one "explain plan record"
+           like PyMongo, the APyMongo explain method returns the list of all 
+           explain plan records for the cursor. 
+
+        .. mongodoc:: explain
+        """
+
+        self.__explain = True
+    
+        # always use a hard limit for explains
+        if self.__limit:
+            self.__limit = -abs(self.__limit)
+            
+        self.loop()
+
     def hint(self, index):
         """Adds a 'hint', telling Mongo the proper index to use for the query.
 
