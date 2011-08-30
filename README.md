@@ -83,8 +83,9 @@ a MongoDB instance is running on localhost:27017 (the default).
 Documentation
 =============
 
-Currently, there is no separate documentation for this project. However,  
-APyMongo's API is essentially identical to pymongo's except for the following:
+Currently, there is no separate documentation for this project. That is by 
+design, as APyMongo's API is essentially identical to pymongo's except for the 
+following:
 
 - Every pymongo method that actually hits the database for a response
 now has a *callback* argument, a single-argument executable to which tornado will
