@@ -131,9 +131,7 @@ Mongo:  APyMongo works for the same MongoDB distributions that PyMongo works on.
 
 Python:  APyMongo requires Python >=2.4.    
 
-Tornado:  IMPORTANT!!! You MUST must be using the a recent pull from the Tornado repository to  
-run APyMongo.   APyMongo depends on a recent addition to the tornado.iostream module that is NOT
-present in the current release. 
+Tornado:  >= 1.1
 
 Additional dependencies are:
 
