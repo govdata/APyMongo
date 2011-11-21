@@ -139,9 +139,9 @@ def _parse_uri(uri, default_port=27017):
 
     return (host_list, db, username, password, collection, options)
 
-             
+
 def receive_body_on_stream(operation,request_id,strm,callback,header):
-                            
+
         length = struct.unpack("<i", header[:4])[0]
         assert request_id == struct.unpack("<i", header[8:12])[0], \
             "ids don't match %r %r" % (request_id,
@@ -149,7 +149,7 @@ def receive_body_on_stream(operation,request_id,strm,callback,header):
         assert operation == struct.unpack("<i", header[12:])[0]
 
         strm.read_bytes(length-16,callback)
-        
+
 
 class _Pool(threading.local):
     """A simple connection pool.
@@ -188,20 +188,21 @@ class _Pool(threading.local):
         if self.stream is not None and self.stream[0] == pid:
             callback(self.stream[1])
 
-        try:
-            self.stream = (pid, self.streams.pop())
-        except IndexError:
-        
-            def stream_callback(strm):
-                if not isinstance(strm,Exception):
-                    self.stream = (pid,strm)
-                callback(strm)
-                
-            self.stream_factory(stream_callback)
-            
         else:
-            callback(self.stream[1])
-            
+            try:
+                self.stream = (pid, self.streams.pop())
+            except IndexError:
+
+                def stream_callback(strm):
+                    if not isinstance(strm,Exception):
+                        self.stream = (pid,strm)
+                    callback(strm)
+
+                self.stream_factory(stream_callback)
+
+            else:
+                callback(self.stream[1])
+
 
     def return_stream(self):
         if self.stream is not None and self.stream[0] == os.getpid():
@@ -316,7 +317,7 @@ class Connection(object):  # TODO support auth for pooling
 
         self.__host = None
         self.__port = None
-        
+
         self.__io_loop = io_loop
 
         if options.has_key("slaveok"):
@@ -349,12 +350,12 @@ class Connection(object):  # TODO support auth for pooling
             self.__find_master()
 
         if username:
-            database = database or "admin"  
+            database = database or "admin"
             def auth_err(x):
                 if not x: raise ConfigurationError("authentication failed")
 
             self[database].authenticate(username, password, auth_err)
-            
+
 
     @classmethod
     def from_uri(cls, uri="mongodb://localhost", **connection_args):
@@ -508,32 +509,32 @@ class Connection(object):  # TODO support auth for pooling
 
         callback = self.__callback_master
         self.__try_node(first,callback)
-        
+
 
     def __try_node(self, node,callback):
         self.disconnect()
         self.__host, self.__port = node
         self.admin.command("ismaster",callback=callback)
-        
+
 
     def __callback_master(self,response):
-           
+
         if isinstance(response,Exception):
             raise response
-            
+
         else:
-       
+
             primary = self.__add_hosts_and_get_primary(response)
             self.end_request()
-            
+
             if response["ismaster"]:
                 primary = True
-     
+
             if (primary is True) or (self.__slave_okay and primary is not None):
-                return 
-            else:        
+                return
+            else:
                 raise AutoReconnect("could not find master/primary")
-        
+
 
     def __add_hosts_and_get_primary(self, response):
         if "hosts" in response:
@@ -549,7 +550,7 @@ class Connection(object):  # TODO support auth for pooling
         Connect to the master if this is a paired connection.
         """
         host, port = self.__host, self.__port
-        
+
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -564,8 +565,8 @@ class Connection(object):  # TODO support auth for pooling
                 stream.connect((host,port),callback=scallback)
             except:
                 callback(ConnectionFailure())
-        
-                         
+
+
 
     def __stream(self,callback):
         """Get a stream from the pool.
@@ -578,7 +579,7 @@ class Connection(object):  # TODO support auth for pooling
         the last socket checkout, to keep performance reasonable - we
         can't avoid those completely anyway.
         """
-        
+
         def scallback(strm):
             t = time.time()
             if t - self.__last_checkout > 1 and strm._check_closed():
@@ -587,9 +588,9 @@ class Connection(object):  # TODO support auth for pooling
             else:
                 self.__last_checkout = t
                 callback(strm)
-  
+
         self.__pool.get_stream(scallback)
-        
+
 
 
     def disconnect(self):
@@ -657,7 +658,7 @@ class Connection(object):  # TODO support auth for pooling
                 return OperationFailure(error["err"], error["code"])
         else:
             return OperationFailure(error["err"])
-        
+
         return response
 
     def _send_message(self, message,with_last_error=False,callback=None):
@@ -676,65 +677,65 @@ class Connection(object):  # TODO support auth for pooling
             message
         """
 
-        
-        def send_callback(strm): 
+
+        def send_callback(strm):
             (request_id, data) = message
             try:
                 strm.write(data)
             except (ConnectionFailure,socket.error),e:
                 self.disconnect()
-                raise AutoReconnect(str(e)) 
+                raise AutoReconnect(str(e))
             else:
                 if with_last_error:
                     assert callback != None
                     def mod_callback(resp):
                         resp = self.__check_response_to_last_error(resp)
                         callback(resp)
-                        
+
                     self.__receive_message_on_stream(1,request_d,strm,callback=mod_callback)
                 elif callback:
                      callback(None)
-    
-             
+
+
         self.__stream(send_callback)
-        
+
 
     def __receive_message_on_stream(self, operation, request_id, strm,callback):
         """Receive a message in response to `request_id` on `sock`.
 
         Passes the response data with the header removed to the callback
         """
-     
+
         receive_body_curry = functools.partial(receive_body_on_stream,operation,request_id,strm,callback)
         strm.read_bytes(16,receive_body_curry)
-        
-        
+
+
 
     def __send_and_receive(self, message, callback,strm):
         """Send a message on the given socket and pass the response data to the callback.
         """
-        (request_id, data) = message        
-        
+        (request_id, data) = message
+
         if isinstance(strm,Exception):
-  
+
             callback(strm)
-            
+
         else:
-        
+
             strm.write(data)
             self.__receive_message_on_stream(1, request_id, strm, callback)
-        
+
 
 
     def _send_message_with_response(self, message, callback):
         """
         """
-           
+
         send_callback = functools.partial(self.__send_and_receive,message,callback)
-                     
+
         self.__stream(send_callback)
 
-                               
+
 
     def start_request(self):
         """DEPRECATED all operations will start a request.
@@ -841,14 +842,14 @@ class Connection(object):  # TODO support auth for pooling
         """Get a list of the names of all databases on the connected server.
            Passes results to callback.
         """
-        
+
         def ncallback(resp):
             nlist = [db["name"] for db in resp["databases"]]
             return callback(nlist)
-            
+
         self.admin.command("listDatabases",ncallback)
-        
-        
+
+
     def drop_database(self, name_or_database):
         """Drop a database.
 
@@ -870,7 +871,7 @@ class Connection(object):  # TODO support auth for pooling
 
         self._purge_index(name)
         self[name].command("dropDatabase")
-        
+
 
     def copy_database(self, from_name, to_name,callback=None,
                       from_host=None, username=None, password=None):
